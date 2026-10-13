@@ -55,7 +55,7 @@ public final class FilterInstaller {
                 if (!loggerName.equals(lc.getName())) {
                     // No dedicated LoggerConfig yet: create one with additivity so
                     // non-denied messages still travel to root appenders.
-                    lc = new LoggerConfig(loggerName, Level.INFO, true);
+                    lc = new LoggerConfig(loggerName, threshold, true);
                     logConfig.addLogger(loggerName, lc);
                 }
 

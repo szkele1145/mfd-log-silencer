@@ -24,7 +24,12 @@ import java.util.Properties;
  * # optional per-logger level threshold override, e.g. fixed_tweaked_controller=WARN
  * </pre>
  *
- * Defaults are written on first run so users can edit and /mfdlogsilencer reload.
+ * Semantics:
+ * - file missing on first run        -> defaults are written and used
+ * - 'loggers' key missing            -> default target (fixed_tweaked_controller)
+ * - 'loggers=' present but empty     -> EMPTY targets: user explicitly disabled
+ *                                       silencing (v1.2.4 fix; previously this
+ *                                       silently fell back to the default target)
  */
 public final class SilencerConfig {
     /** Ordered map: logger name -> threshold level (deny at and below this level... inclusive). */
@@ -47,9 +52,10 @@ public final class SilencerConfig {
             try (Reader r = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
                 props.load(r);
             }
-            String loggers = props.getProperty("loggers", Constants.DEFAULT_TARGET_LOGGER);
-            if (loggers.trim().isEmpty()) {
-                MfdLogSilencer.LOGGER.warn("config has empty 'loggers=' - nothing will be silenced");
+            String loggers = props.getProperty("loggers");
+            if (loggers == null) {
+                // key absent: keep default target
+                return cfg;
             }
             Map<String, Level> parsed = new LinkedHashMap<>();
             for (String raw : loggers.split(",")) {
@@ -57,12 +63,14 @@ public final class SilencerConfig {
                 if (name.isEmpty()) {
                     continue;
                 }
-                Level lvl = parseLevel(props.getProperty(name, "INFO"));
-                parsed.put(name, lvl);
+                parsed.put(name, parseLevel(props.getProperty(name, "INFO"), name));
             }
-            if (!parsed.isEmpty()) {
-                cfg.targets.clear();
-                cfg.targets.putAll(parsed);
+            // 'loggers' key present: adopt exactly what the user wrote,
+            // including an explicitly empty value (= disable silencing)
+            cfg.targets.clear();
+            cfg.targets.putAll(parsed);
+            if (parsed.isEmpty()) {
+                MfdLogSilencer.LOGGER.warn("config has empty 'loggers=' - silencing is disabled");
             }
         } catch (IOException | IllegalArgumentException e) {
             MfdLogSilencer.LOGGER.error("failed to read config, using defaults", e);
@@ -70,15 +78,18 @@ public final class SilencerConfig {
         return cfg;
     }
 
-    private static Level parseLevel(String raw) {
-        String v = raw.trim().toUpperCase(Locale.ROOT);
+    private static Level parseLevel(String raw, String loggerName) {
+        String v = raw == null ? "" : raw.trim().toUpperCase(Locale.ROOT);
         return switch (v) {
+            case "", "INFO" -> Level.INFO;
             case "TRACE" -> Level.TRACE;
             case "DEBUG" -> Level.DEBUG;
-            case "INFO" -> Level.INFO;
             case "WARN", "WARNING" -> Level.WARN;
             case "ERROR" -> Level.ERROR;
-            default -> Level.INFO;
+            default -> {
+                MfdLogSilencer.LOGGER.warn("unknown level '{}' for logger '{}', using INFO", raw, loggerName);
+                yield Level.INFO;
+            }
         };
     }
 
@@ -88,6 +99,7 @@ public final class SilencerConfig {
         lines.add("# loggers: comma separated logger names whose INFO/DEBUG/TRACE messages are hidden.");
         lines.add("# WARN/ERROR always pass through. Add more loggers (comma separated) to silence other mods.");
         lines.add("# Per-logger threshold override (optional): <loggerName>=INFO|WARN|ERROR");
+        lines.add("# Empty value ('loggers=') disables silencing entirely.");
         lines.add("# After editing run /mfdlogsilencer reload in-game (or restart).");
         lines.add("loggers=" + Constants.DEFAULT_TARGET_LOGGER);
         try {
