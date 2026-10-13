@@ -34,6 +34,15 @@ loggers=fixed_tweaked_controller
 - 想连 WARN 也屏蔽？加一行 `fixed_tweaked_controller=WARN`
 - 改完在游戏里执行 `/mfdlogsilencer reload` 即时生效，无需重启
 
+**配置语义**（1.2.4 起）：
+
+| 情况 | 行为 |
+|---|---|
+| `loggers` 键缺失 | 使用默认目标 `fixed_tweaked_controller` |
+| `loggers=` 显式留空 | **关闭屏蔽**（并输出告警） |
+| 未知级别值（如 `=WARN2`） | 告警并回退 `INFO` |
+| 每行 `<loggerName>=<LEVEL>` | 覆盖该 logger 的阈值（INFO/DEBUG/WARN/ERROR/TRACE） |
+
 ## 命令
 
 | 命令 | 权限 | 作用 |
@@ -47,7 +56,7 @@ loggers=fixed_tweaked_controller
 
 ## 安装
 
-把 `build/libs/mfd-log-silencer-1.2.0.jar` 放进 `mods/` 目录即可，
+把 `build/libs/mfd-log-silencer-1.2.4.jar` 放进 `mods/` 目录即可，
 客户端、服务端都能用（纯服务端日志屏蔽，客户端装不装都不影响功能）。
 
 ## 依赖
