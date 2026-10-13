@@ -1,6 +1,5 @@
 package dev.szkele.mfdlogsilencer;
 
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -14,12 +13,13 @@ import java.nio.file.Path;
  * The filter is installed in the mod constructor (earliest safe point for log4j2 on
  * NeoForge 1.21.1) and can be re-applied in-game via /mfdlogsilencer reload.
  *
- * NOTE: this class is loaded on BOTH sides. Do not reference client-only classes
- * here directly - go through ClientSetup which is only classloaded on the client.
+ * Commands are registered only through RegisterCommandsEvent, which fires on the
+ * dedicated server AND for the integrated server in single player - one code path,
+ * no client/server command shadowing.
  */
 public final class MfdLogSilencer {
     public static final String MODID = "mfd_log_silencer";
-    public static final String VERSION = "1.1.1";
+    public static final String VERSION = "1.2.0";
 
     private static volatile SilencerConfig config;
 
@@ -28,21 +28,14 @@ public final class MfdLogSilencer {
         config = SilencerConfig.load(configFile);
 
         int n = FilterInstaller.apply(config);
-        System.out.println(Constants.CONSOLE_PREFIX + "v" + VERSION + " 已激活："
-                + n + " 个 logger 的 INFO/DEBUG 日志已屏蔽（WARN/ERROR 不受影响）");
+        System.out.println(Constants.CONSOLE_PREFIX + "v" + VERSION + " activated: "
+                + n + " logger(s) silenced at INFO/DEBUG (WARN/ERROR pass through)");
         if (n == 0) {
-            System.out.println(Constants.CONSOLE_PREFIX + "警告：没有安装任何过滤器，"
-                    + "请检查 config/mfd-log-silencer.properties 的 loggers 配置");
+            System.out.println(Constants.CONSOLE_PREFIX + "WARNING: no filter installed, "
+                    + "check 'loggers=' in config/mfd-log-silencer.properties");
         }
 
-        // server-side command registration (dedicated + integrated server)
         NeoForge.EVENT_BUS.addListener(MfdLogSilencer::onRegisterCommands);
-
-        // client-only command registration; separate class so dedicated servers
-        // never classload client-only event types
-        if (FMLEnvironment.dist.isClient()) {
-            ClientSetup.registerClientCommands();
-        }
     }
 
     public static Path configPath() {

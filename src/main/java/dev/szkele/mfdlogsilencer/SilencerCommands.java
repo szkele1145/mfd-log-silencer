@@ -8,8 +8,12 @@ import static net.minecraft.commands.Commands.literal;
 
 /**
  * /mfdlogsilencer status | reload | about
- * Registered on both the server (RegisterCommandsEvent) and, on the client,
- * RegisterClientCommandsEvent so it also works in single player without LAN.
+ *
+ * Registered only via RegisterCommandsEvent (server side). In single player the
+ * integrated server fires that event too, so the command works everywhere the mod
+ * is loaded. We deliberately do NOT also register on RegisterClientCommandsEvent:
+ * a client command with the same name shadows the server command in single player,
+ * which would break the permission-checked /reload subcommand.
  */
 public final class SilencerCommands {
     private SilencerCommands() {
@@ -20,6 +24,14 @@ public final class SilencerCommands {
                 .then(literal("status")
                         .executes(ctx -> {
                             report(ctx.getSource());
+                            return 1;
+                        }))
+                .then(literal("reset")
+                        .requires(src -> src.hasPermission(2))
+                        .executes(ctx -> {
+                            SilencerStats.reset();
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                    Constants.CONSOLE_PREFIX + "统计已清零"), true);
                             return 1;
                         }))
                 .then(literal("reload")
@@ -44,11 +56,28 @@ public final class SilencerCommands {
 
     private static void report(CommandSourceStack src) {
         long total = SilencerStats.getTotal();
+        var perLogger = SilencerStats.getPerLogger();
         var recent = SilencerStats.getRecent();
+
         StringBuilder sb = new StringBuilder();
         sb.append(Constants.CONSOLE_PREFIX).append("已拦截 ").append(total).append(" 条日志");
+        src.sendSuccess(() -> Component.literal(sb.toString()), false);
+
+        if (!perLogger.isEmpty()) {
+            StringBuilder per = new StringBuilder(Constants.CONSOLE_PREFIX);
+            boolean first = true;
+            for (var e : perLogger.entrySet()) {
+                if (!first) {
+                    per.append(", ");
+                }
+                per.append(e.getKey()).append(": ").append(e.getValue());
+                first = false;
+            }
+            src.sendSuccess(() -> Component.literal(per.toString()), false);
+        }
+
         if (!recent.isEmpty()) {
-            sb.append("，最近：");
+            StringBuilder recentSb = new StringBuilder(Constants.CONSOLE_PREFIX).append("最近：");
             int shown = 0;
             for (int i = recent.size() - 1; i >= 0 && shown < 3; i--, shown++) {
                 SilencerStats.Entry e = recent.get(i);
@@ -56,9 +85,9 @@ public final class SilencerCommands {
                 if (msg.length() > 60) {
                     msg = msg.substring(0, 60) + "...";
                 }
-                sb.append(" [").append(e.level()).append("] ").append(msg);
+                recentSb.append(" [").append(e.level()).append("] ").append(msg);
             }
+            src.sendSuccess(() -> Component.literal(recentSb.toString()), false);
         }
-        src.sendSuccess(() -> Component.literal(sb.toString()), false);
     }
 }

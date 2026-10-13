@@ -4,15 +4,12 @@ license="MIT"
 
 [[mods]]
 modId="mfd_log_silencer"
-version="1.1.1"
+version="1.2.0"
 displayName="MFD Log Silencer"
 logoFile="icon.png"
 authors="szkele1145"
 description='''
-屏蔽 Fixed Tweaked Controller (fixed_tweaked_controller) 每秒刷屏的
-[Server] signals pos=... linked=... values={} INFO 日志。
-只拦截该 mod 的 INFO/DEBUG 级别日志，WARN/ERROR 正常显示。
-'''
+灞忚斀 Fixed Tweaked Controller (fixed_tweaked_controller) 姣忕鍒峰睆鐨?[Server] signals pos=... linked=... values={} INFO 鏃ュ織銆?鍙嫤鎴 mod 鐨?INFO/DEBUG 绾у埆鏃ュ織锛學ARN/ERROR 姝ｅ父鏄剧ず銆?'''
 
 [[dependencies.mfd_log_silencer]]
     modId="neoforge"
