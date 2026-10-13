@@ -1,5 +1,10 @@
 # MFD Log Silencer
 
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/mfd-log-silencer?logo=modrinth&label=Modrinth)](https://modrinth.com/mod/mfd-log-silencer)
+[![Modrinth Version](https://img.shields.io/modrinth/v/mfd-log-silencer?logo=modrinth)](https://modrinth.com/mod/mfd-log-silencer)
+[![GitHub Release](https://img.shields.io/github/v/release/szkele1145/mfd-log-silencer?logo=github)](https://github.com/szkele1145/mfd-log-silencer/releases)
+[![License](https://img.shields.io/github/license/szkele1145/mfd-log-silencer)](LICENSE)
+
 一个 NeoForge 1.21.1 的小型工具 mod：屏蔽 `fixed_tweaked_controller`
 （Fixed Tweaked Controller / MFD-FixedController）每秒刷屏的服务端 INFO 日志：
 
