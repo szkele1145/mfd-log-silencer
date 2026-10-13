@@ -3,6 +3,15 @@
 All notable changes to this project are documented in this file.
 格式参考 Keep a Changelog；版本号语义为 SemVer。
 
+## [1.2.5] - 2026-10-14
+
+### Fixed
+- **最终验收发现**：jar 内 `neoforge.mods.toml` 的中文描述被此前一次 ASCII 编码
+  写入损毁成 `?`（mod 列表里会显示问号）。描述改为英文，彻底避开宿主编码差异。
+
+### Changed
+- 定为最终稳定版：1.0.0 → 1.2.5 共 9 个版本，核心逻辑经八轮审查全部实证修复。
+
 ## [1.2.4] - 2026-10-14
 
 ### Fixed
