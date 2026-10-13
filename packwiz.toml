@@ -1,13 +1,13 @@
 name = "MFD Log Silencer"
-filename = "mfd-log-silencer-1.2.4.jar"
+filename = "mfd-log-silencer-1.2.5.jar"
 side = "both"
 
 [download]
 hash-format = "sha512"
-hash = "7437e5b15ea93a3a2234012e7e9ea9f89d0d31c4de12adffca2d0701e2c0381b815cb1848722b33608d415af9874b885d0b9217f92db2073390bc433334ff805"
+hash = "b1eb7843a633243ecfae752db8e35e4a84089150206d342092196e30f25ba6da1dd86a6319355aed591e67c83ba654e5bd8da777d1e9181a3f57521c5fe87a60"
 mode = "metadata:modrinth"
 
 [update]
 [update.modrinth]
 mod-id = "hwFic1er"
-version-id = "Lq6eKVoK"
+version-id = "ek7jE6bq"
