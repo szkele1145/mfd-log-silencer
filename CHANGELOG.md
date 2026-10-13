@@ -3,6 +3,15 @@
 All notable changes to this project are documented in this file.
 格式参考 Keep a Changelog；版本号语义为 SemVer。
 
+## [1.2.4] - 2026-10-14
+
+### Fixed
+- **配置语义修复**：`loggers=` 显式留空现在表示"关闭屏蔽"（v1.2.3 之前会静默
+  回退到默认目标，违背用户意图）；`loggers` 键缺失仍使用默认目标。
+- 新建 LoggerConfig 的级别跟随配置的阈值（之前硬编码 INFO，配置 WARN 阈值时
+  DEBUG 消息会先被级别门槛放行到 filter 之前——行为不完整）。
+- 配置里写了未知级别（如 `=WARNING2`）时告警并回退 INFO，不再静默。
+
 ## [1.2.3] - 2026-10-14
 
 ### Changed
