@@ -3,6 +3,8 @@ package dev.szkele.mfdlogsilencer;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 
@@ -19,7 +21,10 @@ import java.nio.file.Path;
  */
 public final class MfdLogSilencer {
     public static final String MODID = "mfd_log_silencer";
-    public static final String VERSION = "1.2.0";
+    public static final String VERSION = "1.2.1";
+
+    /** Our own logger. Deliberately NOT in the silenced list, so status output stays visible. */
+    public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     private static volatile SilencerConfig config;
 
@@ -28,11 +33,11 @@ public final class MfdLogSilencer {
         config = SilencerConfig.load(configFile);
 
         int n = FilterInstaller.apply(config);
-        System.out.println(Constants.CONSOLE_PREFIX + "v" + VERSION + " activated: "
-                + n + " logger(s) silenced at INFO/DEBUG (WARN/ERROR pass through)");
-        if (n == 0) {
-            System.out.println(Constants.CONSOLE_PREFIX + "WARNING: no filter installed, "
-                    + "check 'loggers=' in config/mfd-log-silencer.properties");
+        if (n > 0) {
+            LOGGER.info("v{} activated: {} logger(s) silenced at INFO/DEBUG (WARN/ERROR pass through)",
+                    VERSION, n);
+        } else {
+            LOGGER.warn("no filter installed - check 'loggers=' in config/mfd-log-silencer.properties");
         }
 
         NeoForge.EVENT_BUS.addListener(MfdLogSilencer::onRegisterCommands);

@@ -73,7 +73,7 @@ public final class FilterInstaller {
             }
             ctx.updateLoggers();
         } catch (Throwable t) {
-            System.out.println(Constants.CONSOLE_PREFIX + "日志过滤安装失败: " + t);
+            MfdLogSilencer.LOGGER.error("failed to install log filters", t);
         }
         return installed;
     }

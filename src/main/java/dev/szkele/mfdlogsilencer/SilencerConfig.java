@@ -62,7 +62,7 @@ public final class SilencerConfig {
                 cfg.targets.putAll(parsed);
             }
         } catch (IOException | IllegalArgumentException e) {
-            System.out.println(Constants.CONSOLE_PREFIX + "配置读取失败，使用默认值: " + e);
+            MfdLogSilencer.LOGGER.error("failed to read config, using defaults", e);
         }
         return cfg;
     }
@@ -91,7 +91,7 @@ public final class SilencerConfig {
             Files.createDirectories(file.getParent());
             Files.write(file, lines, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.out.println(Constants.CONSOLE_PREFIX + "默认配置写入失败: " + e);
+            MfdLogSilencer.LOGGER.error("failed to write default config", e);
         }
     }
 

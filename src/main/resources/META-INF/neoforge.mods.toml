@@ -4,12 +4,12 @@ license="MIT"
 
 [[mods]]
 modId="mfd_log_silencer"
-version="1.2.0"
+version="1.2.1"
 displayName="MFD Log Silencer"
 logoFile="icon.png"
 authors="szkele1145"
 description='''
-灞忚斀 Fixed Tweaked Controller (fixed_tweaked_controller) 姣忕鍒峰睆鐨?[Server] signals pos=... linked=... values={} INFO 鏃ュ織銆?鍙嫤鎴 mod 鐨?INFO/DEBUG 绾у埆鏃ュ織锛學ARN/ERROR 姝ｅ父鏄剧ず銆?'''
+????? Fixed Tweaked Controller (fixed_tweaked_controller) ???????????[Server] signals pos=... linked=... values={} INFO ???????????????? mod ??INFO/DEBUG ????????????RN/ERROR ???????????'''
 
 [[dependencies.mfd_log_silencer]]
     modId="neoforge"
