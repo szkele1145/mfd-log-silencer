@@ -9,19 +9,42 @@
 
 ## 原理
 
-在 mod 构造阶段给 log4j2 的 `fixed_tweaked_controller` logger 挂一个
-`LevelRangeFilter`：
+在 mod 构造阶段给 log4j2 的目标 logger 挂一个自定义的 `AbstractFilter`：
 
-- **拦截**：该 logger 的 `TRACE` / `DEBUG` / `INFO` 日志
+- **拦截**：该 logger 的 `INFO` 及更低级别（`DEBUG` / `TRACE`）
 - **放行**：`WARN` / `ERROR`（真正的报错仍然可见）
 - **不影响**：其他任何 mod 与原版日志
 
-同时通过 `Configurator.setLevel` 把该 logger 的有效级别压到 `WARN`，
-即使过滤器未生效（例如其他日志后端）也不会刷屏。
+> 版本注记：v1.0.0 使用的 `LevelRangeFilter(TRACE, INFO)` 参数顺序在 log4j2 的
+> intLevel 语义（数值越小越严重）下是空区间，等于没装过滤器。v1.1.0 修复了
+> 该问题，并经过独立 JVM 冒烟测试验证（拦截/放行/幂等均符合预期）。
+
+## 配置
+
+首次启动生成 `config/mfd-log-silencer.properties`：
+
+```properties
+# 逗号分隔的 logger 名，其 INFO/DEBUG/TRACE 日志会被隐藏
+loggers=fixed_tweaked_controller
+# 可选：按 logger 覆盖阈值（屏蔽该级别及更低级别）
+# fixed_tweaked_controller=INFO
+```
+
+- 想屏蔽其他 mod 的刷屏？把它的 logger 名（通常就是它的 modid）加进 `loggers`，逗号分隔
+- 想连 WARN 也屏蔽？加一行 `fixed_tweaked_controller=WARN`
+- 改完在游戏里执行 `/mfdlogsilencer reload` 即时生效，无需重启
+
+## 命令
+
+| 命令 | 权限 | 作用 |
+|---|---|---|
+| `/mfdlogsilencer status` | 所有人 | 查看已拦截条数与最近被拦的日志样例 |
+| `/mfdlogsilencer reload` | OP (2) | 重读配置文件并重装过滤器 |
+| `/mfdlogsilencer about` | 所有人 | 版本信息 |
 
 ## 安装
 
-把 `build/libs/mfd-log-silencer-1.0.0.jar` 放进 `mods/` 目录即可，
+把 `build/libs/mfd-log-silencer-1.1.0.jar` 放进 `mods/` 目录即可，
 客户端、服务端都能用（纯服务端日志屏蔽，客户端装不装都不影响功能）。
 
 ## 依赖
@@ -35,6 +58,10 @@
 ```
 gradlew build
 ```
+
+（需要在纯 ASCII 路径下构建：本项目的 Gradle/NFRT 工具链在含非 ASCII 字符的
+路径上会出现 argfile 编码问题。Windows 下可用 `mklink /J C:\mfd-build <本目录>` 后
+在 `C:\mfd-build` 中构建。）
 
 ## 许可
 

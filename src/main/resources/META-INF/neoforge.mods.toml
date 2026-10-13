@@ -4,7 +4,7 @@ license="MIT"
 
 [[mods]]
 modId="mfd_log_silencer"
-version="1.0.0"
+version="1.1.0"
 displayName="MFD Log Silencer"
 logoFile="icon.png"
 authors="szkele1145"
