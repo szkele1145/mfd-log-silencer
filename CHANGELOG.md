@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file.
 格式参考 Keep a Changelog；版本号语义为 SemVer。
 
+## [1.2.1] - 2026-10-14
+
+### Changed
+- 控制台输出改用 mod 自己的 log4j logger（mfd_log_silencer），替代 System.out，
+  便于服务器日志 grep 与级别管理；安装失败会以 ERROR 级别记录堆栈。
+- Modrinth 项目页面更新（英文简介 + 中文详细说明，符合 Modrinth 非英语内容规范）。
+
 ## [1.2.0] - 2026-10-14
 
 ### Changed
