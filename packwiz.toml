@@ -1,5 +1,5 @@
 name = "MFD Log Silencer"
-filename = "mfd-log-silencer-1.1.1.jar"
+filename = "mfd-log-silencer-1.2.0.jar"
 side = "both"
 
 [download]
@@ -10,4 +10,4 @@ mode = "metadata:modrinth"
 [update]
 [update.modrinth]
 mod-id = "hwFic1er"
-version-id = "iwAHta2S"
+version-id = "mnv2mOto"
