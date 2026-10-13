@@ -38,13 +38,16 @@ loggers=fixed_tweaked_controller
 
 | 命令 | 权限 | 作用 |
 |---|---|---|
-| `/mfdlogsilencer status` | 所有人 | 查看已拦截条数与最近被拦的日志样例 |
+| `/mfdlogsilencer status` | 所有人 | 查看拦截总数、按 logger 细分计数与最近样例 |
+| `/mfdlogsilencer reset` | OP (2) | 清零统计数据 |
 | `/mfdlogsilencer reload` | OP (2) | 重读配置文件并重装过滤器 |
 | `/mfdlogsilencer about` | 所有人 | 版本信息 |
 
+命令只在服务端注册（单机的集成服同样触发），客户端/服务端一套逻辑，无遮蔽问题。
+
 ## 安装
 
-把 `build/libs/mfd-log-silencer-1.1.0.jar` 放进 `mods/` 目录即可，
+把 `build/libs/mfd-log-silencer-1.2.0.jar` 放进 `mods/` 目录即可，
 客户端、服务端都能用（纯服务端日志屏蔽，客户端装不装都不影响功能）。
 
 ## 依赖

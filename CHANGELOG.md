@@ -1,0 +1,48 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+格式参考 Keep a Changelog；版本号语义为 SemVer。
+
+## [1.2.0] - 2026-10-14
+
+### Changed
+- 命令注册收敛到唯一的 `RegisterCommandsEvent`（专用服 + 单机集成服都会触发）。
+  移除了 v1.1.x 的客户端命令注册——同名客户端命令会在单机环境遮蔽服务端命令，
+  导致权限校验过的 `reload` 子命令行为不确定。
+- 控制台输出改为英文（避免宿主文件编码差异引入乱码；游戏内聊天仍为中文）。
+
+### Added
+- `/mfdlogsilencer reset`：清零统计数据（OP 权限）。
+- `status` 现在按 logger 细分显示拦截条数。
+
+### Fixed
+- 构建脚本 BOM 问题（PowerShell 编辑引入的 UTF-8 BOM 导致 Gradle/Java 编译失败）。
+
+## [1.1.1] - 2026-10-14
+
+### Fixed
+- 专用服务器类加载安全：客户端专属事件类（`RegisterClientCommandsEvent`）的引用
+  隔离到仅在客户端类加载的 `ClientSetup`，避免专用服出现 `NoClassDefFoundError`。
+
+### Added
+- 过滤器安装数为 0 时输出警告，提示检查配置文件。
+
+## [1.1.0] - 2026-10-14
+
+### Fixed
+- **关键修复**：v1.0.0 的 `LevelRangeFilter(TRACE, INFO)` 在 log4j2 intLevel 语义
+  （数值越小越严重）下是空区间，过滤器实际从未生效。修正为正确的区间判断，
+  并用独立 JVM 冒烟测试验证：INFO/DEBUG 拦截、WARN/ERROR 放行、其他 logger
+  不受影响、重复安装幂等。
+
+### Added
+- 配置文件 `config/mfd-log-silencer.properties`：自定义要屏蔽的 logger 列表，
+  以及按 logger 覆盖阈值（例如连 WARN 一起屏蔽，或屏蔽其他 mod 的刷屏）。
+- 游戏内命令 `/mfdlogsilencer status | reload | about`。
+- 拦截统计（总数计数 + 最近被拦消息环形缓冲），通过 `status` 展示。
+
+## [1.0.0] - 2026-10-13
+
+### Added
+- 初始版本：屏蔽 `fixed_tweaked_controller` 每秒刷屏的 INFO 日志。
+- NeoForge 1.21.1，Modrinth / GitHub 发布。
