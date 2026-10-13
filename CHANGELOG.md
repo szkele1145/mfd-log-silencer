@@ -3,6 +3,15 @@
 All notable changes to this project are documented in this file.
 格式参考 Keep a Changelog；版本号语义为 SemVer。
 
+## [1.2.2] - 2026-10-14
+
+### Fixed
+- `/mfdlogsilencer reload` 后，从配置中删除的 logger 其过滤器不会被移除，
+  导致无法通过编辑配置文件恢复日志显示。现在 reload 会清理已删除 logger 的过滤器。
+
+### Changed
+- Modrinth 项目页新增 gallery 封面与 GitHub 源码/Issues 链接（清除平台 nag）。
+
 ## [1.2.1] - 2026-10-14
 
 ### Changed
