@@ -3,11 +3,11 @@ filename = "mfd-log-silencer-1.0.0.jar"
 side = "both"
 
 [download]
-hash-format = "sha256"
-hash = "PLACEHOLDER"
+hash-format = "sha512"
+hash = "da77f2da58a1275a742e69c7d3650d6f9da2378a57c1ee9208d5dd6c75b475149f241ae122e58cbbf940345ab29ae260f6d082fe7ccb5d7313e615d93afab08c"
 mode = "metadata:modrinth"
 
 [update]
 [update.modrinth]
-mod-id = "PLACEHOLDER"
-version-id = "PLACEHOLDER"
+mod-id = "hwFic1er"
+version-id = "TMH2DJuF"
