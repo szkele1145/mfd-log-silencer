@@ -48,6 +48,9 @@ public final class SilencerConfig {
                 props.load(r);
             }
             String loggers = props.getProperty("loggers", Constants.DEFAULT_TARGET_LOGGER);
+            if (loggers.trim().isEmpty()) {
+                MfdLogSilencer.LOGGER.warn("config has empty 'loggers=' - nothing will be silenced");
+            }
             Map<String, Level> parsed = new LinkedHashMap<>();
             for (String raw : loggers.split(",")) {
                 String name = raw.trim();
