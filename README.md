@@ -28,7 +28,7 @@
 
 - Minecraft 1.21.1
 - NeoForge 21.1.0+
-- fixed_tweaked_controller 1.4.0+（要屏蔽的就是它）
+- [fixed Tweaked Controller](https://modrinth.com/mod/fixed-tweaked-controller) 1.4.0+（要屏蔽的就是它）
 
 ## 构建
 
