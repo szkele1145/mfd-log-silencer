@@ -4,7 +4,7 @@ side = "both"
 
 [download]
 hash-format = "sha512"
-hash = "145bdcac7e05182f5bac89f726fadf8a489d61412b272e079facf3dfb416e5f5008b51329f23764d17eb78d56c4fa41875ad25c133ed0d394183c716e696066f"
+hash = "489fab4301eb1627cd9d71dcec38a5c863ca700b8f7339f366defb0e97388f5f2dd2ee99e751cbea47c13cca60ae0ad6575a5282dab9dd12ee7b5cbd49a04583"
 mode = "metadata:modrinth"
 
 [update]
