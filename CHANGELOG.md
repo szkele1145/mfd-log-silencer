@@ -3,6 +3,11 @@
 All notable changes to this project are documented in this file.
 格式参考 Keep a Changelog；版本号语义为 SemVer。
 
+## [1.2.3] - 2026-10-14
+
+### Changed
+- 配置文件里 `loggers=` 留空时启动即告警（之前会静默不装任何过滤器）。
+
 ## [1.2.2] - 2026-10-14
 
 ### Fixed
