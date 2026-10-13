@@ -71,6 +71,17 @@ public final class FilterInstaller {
                 INSTALLED.put(loggerName, filter);
                 installed++;
             }
+            // remove filters for loggers that were dropped from the config (reload case)
+            for (Map.Entry<String, CountingFilter> stale : INSTALLED.entrySet()) {
+                if (!config.getTargets().containsKey(stale.getKey())) {
+                    LoggerConfig lc = logConfig.getLoggerConfig(stale.getKey());
+                    if (lc != null) {
+                        lc.removeFilter(stale.getValue());
+                    }
+                    INSTALLED.remove(stale.getKey());
+                }
+            }
+
             ctx.updateLoggers();
         } catch (Throwable t) {
             MfdLogSilencer.LOGGER.error("failed to install log filters", t);
