@@ -1,0 +1,13 @@
+name = "MFD Log Silencer"
+filename = "mfd-log-silencer-1.0.0.jar"
+side = "both"
+
+[download]
+hash-format = "sha256"
+hash = "PLACEHOLDER"
+mode = "metadata:modrinth"
+
+[update]
+[update.modrinth]
+mod-id = "PLACEHOLDER"
+version-id = "PLACEHOLDER"

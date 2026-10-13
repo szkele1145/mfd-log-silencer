@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="MIT"
+
+[[mods]]
+modId="mfd_log_silencer"
+version="1.0.0"
+displayName="MFD Log Silencer"
+logoFile="icon.png"
+authors="szkele1145"
+description='''
+屏蔽 Fixed Tweaked Controller (fixed_tweaked_controller) 每秒刷屏的
+[Server] signals pos=... linked=... values={} INFO 日志。
+只拦截该 mod 的 INFO/DEBUG 级别日志，WARN/ERROR 正常显示。
+'''
+
+[[dependencies.mfd_log_silencer]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.1.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.mfd_log_silencer]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21.1]"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.mfd_log_silencer]]
+    modId="fixed_tweaked_controller"
+    type="required"
+    versionRange="[1.4.0,)"
+    ordering="AFTER"
+    side="BOTH"
