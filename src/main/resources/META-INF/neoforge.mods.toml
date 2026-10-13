@@ -4,12 +4,16 @@ license="MIT"
 
 [[mods]]
 modId="mfd_log_silencer"
-version="1.2.4"
+version="1.2.5"
 displayName="MFD Log Silencer"
 logoFile="icon.png"
 authors="szkele1145"
 description='''
-????? Fixed Tweaked Controller (fixed_tweaked_controller) ???????????[Server] signals pos=... linked=... values={} INFO ???????????????? mod ??INFO/DEBUG ????????????RN/ERROR ???????????'''
+Silences the per-second INFO log spam of fixed Tweaked Controller
+([Server] signals pos=... linked=... values={}). Only INFO/DEBUG logs of the
+target logger are denied; WARN/ERROR pass through. Configurable via
+config/mfd-log-silencer.properties and the /mfdlogsilencer command.
+'''
 
 [[dependencies.mfd_log_silencer]]
     modId="neoforge"
