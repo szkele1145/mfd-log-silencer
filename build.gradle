@@ -12,6 +12,21 @@ base {
     archivesName = 'mfd-log-silencer'
 }
 
+// Filename convention: modid-version-mc-loader.jar
+def mcVer = '1.21.1'
+def loader = 'neoforge'
+jar {
+    archiveFileName = "mfd-log-silencer-${project.version}-${mcVer}-${loader}.jar"
+    manifest {
+        attributes [
+            'Specification-Title'   : 'mfd-log-silencer',
+            'Specification-Version' : '1.0',
+            'Implementation-Title'  : 'MFDFixedControllerLogSilencer',
+            'Implementation-Version': project.version,
+        ]
+    }
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -46,15 +61,4 @@ neoForge {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release = 21
-}
-
-jar {
-    manifest {
-        attributes [
-            'Specification-Title'   : 'mfd-log-silencer',
-            'Specification-Version' : '1.0',
-            'Implementation-Title'  : 'MFDFixedControllerLogSilencer',
-            'Implementation-Version': '1.0.0',
-        ]
-    }
 }
