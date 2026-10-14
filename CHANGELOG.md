@@ -3,6 +3,24 @@
 All notable changes to this project are documented in this file.
 格式参考 Keep a Changelog；版本号语义为 SemVer。
 
+## [1.3.0] - 2026-10-14
+
+### Fixed
+- **真实服务器不拦截**：用户实测 1.2.5 在专用服务器上仍在刷屏（纯 log4j2 冒烟
+  测试却通过）。根因方向：NeoForge/服务器初始化可能在 mod 构造之后重建/替换
+  log4j2 Configuration，导致挂在 LoggerConfig 上的过滤器丢失。
+
+### Added
+- **TurboFilter 全局兜底层**：log4j2 在任何事件进入 LoggerConfig 之前先询问
+  turbo filter，不受 Configuration 重建影响；配置 reload 时原子换规则集。
+- 前置 `fixed_tweaked_controller` 改为 `optional`（过滤器按名字工作，
+  目标 mod 不在时无需强制装它，也便于独立测试）。
+- 冒烟测试 v2：新增"重装后仍拦"与"空配置正确关闭"两个场景。
+
+### Note
+- 请实测：重启服务器后刷屏应停止。若仍刷屏，把启动日志里
+  `[MFD-LogSilencer]` 开头的行发给开发者。
+
 ## [1.2.5] - 2026-10-14
 
 ### Fixed
