@@ -31,6 +31,9 @@ neoForge {
         configureEach {
             gameDirectory = file('run')
         }
+        server {
+            server()
+        }
     }
 
     mods {
