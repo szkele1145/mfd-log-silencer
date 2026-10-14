@@ -64,6 +64,8 @@ loggers=fixed_tweaked_controller
 把 `build/libs/mfd-log-silencer-1.2.4.jar` 放进 `mods/` 目录即可，
 客户端、服务端都能用（纯服务端日志屏蔽，客户端装不装都不影响功能）。
 
+> **前置 mod：[fixed Tweaked Controller](https://modrinth.com/mod/fixed-tweaked-controller)**（必装，本 mod 就是为它服务的）
+
 ## 依赖
 
 - Minecraft 1.21.1
