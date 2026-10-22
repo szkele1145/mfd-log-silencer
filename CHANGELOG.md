@@ -3,6 +3,34 @@
 All notable changes to this project are documented in this file.
 格式参考 Keep a Changelog；版本号语义为 SemVer。
 
+## [1.4.0] - 2026-10-22
+
+### Fixed
+- **完全没生效的真根因**：目标 mod（1.4.2）日志走的是 **SLF4J**，logger 名由
+  Java 类名/modid 派生，例如 `fixed_tweaked_controller`，而它的调试 mixin
+  在 `com.pb7ap8lthh.fmdmod.*` / `dev.ryanhcode.*` 包里。1.x 只按**精确 logger 名**
+  挂过滤器，名字对不上就等于什么都没做（而且 1.x 的 Config 只挂了一层
+  `Configuration.addFilter`，配置被替换时会丢）。
+- 配置里重复写多行 `DISABLE=...` 现在会合并（此前 `java.util.Properties`
+  后写覆盖前写，只剩最后一条）。
+
+### Changed
+- **规则制配置**：`DISABLE=<logger 名或 Java 包>`（重复写多行或逗号分隔）、
+  `KEEP=warn|error|debug|info|trace`（默认 `warn`）。包规则对子包/子类自动生效。
+- 默认规则：`fixed_tweaked_controller`、`com.pb7ap8lthh`、`dev.ryanhcode.sable.Sable`
+  （Sable 每 5 分钟刷 3 行 "Saving sub-levels"，也是 INFO）。
+- 旧的 1.x 配置（`loggers=a,b` + 每 logger 阈值）仍然可用。
+- 环境变量覆盖：`-DMFD_DISABLE=mod_a,mod_b`（替换规则）、`-DMFD_DISABLE_CLASSES=pkg1,pkg2`（追加包规则）。
+- 新增 `/mfdlogsilencer dump`：列出运行期出现过的 logger 名，配不出规则时一眼就知道该写哪个。
+- 过滤器改为**单个全局 turbo filter**（规则集热替换），并在 `ServerStartedEvent`
+  时重新挂载一次，覆盖 mod 构造期间的日志配置改动。
+- 构建：去掉 `foojay-resolver-convention` 插件（构建机离线时插件解析会直接失败）。
+
+### Added
+- 独立的 SLF4J + log4j 2.22.1 冒烟测试（`tools/harness/Slf4jSilenceTest.java`，
+  7 个场景：默认规则、旧配置复现漏拦、reload 关闭、包级规则、KEEP 级别、
+  自身 logger 放行、空配置回退默认）。
+
 ## [1.3.0] - 2026-10-14
 
 ### Fixed

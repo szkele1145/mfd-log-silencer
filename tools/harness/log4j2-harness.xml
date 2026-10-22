@@ -1,0 +1,14 @@
+# Log4j2 configuration used ONLY by the standalone harness (tools/harness).
+# Mirrors what Minecraft/NeoForge ship: root INFO -> terminal + file.
+<Configuration status="WARN" name="Harness">
+  <Appenders>
+    <Console name="SysOut" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%logger{1}/]: %msg%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="INFO">
+      <AppenderRef ref="SysOut"/>
+    </Root>
+  </Loggers>
+</Configuration>

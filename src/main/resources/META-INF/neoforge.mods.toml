@@ -4,15 +4,17 @@ license="MIT"
 
 [[mods]]
 modId="mfd_log_silencer"
-version="1.3.0"
+version="1.4.0"
 displayName="MFD Log Silencer"
 logoFile="icon.png"
 authors="szkele1145"
 description='''
-Silences the per-second INFO log spam of fixed Tweaked Controller
-([Server] signals pos=... linked=... values={}). Only INFO/DEBUG logs of the
-target logger are denied; WARN/ERROR pass through. Configurable via
-config/mfd-log-silencer.properties and the /mfdlogsilencer command.
+Hides the per-second INFO log spam of fixed Tweaked Controller
+([MFD-FixedController] signals pos=... linked=... values={}) and of its
+diagnostic mixins. Rules are logger / Java-package based (DISABLE=...), so they
+work no matter which logger names a mod actually uses; WARN/ERROR always pass
+through (configurable with KEEP=...). Configured in
+config/mfd-log-silencer.properties, reloadable in game with /mfdlogsilencer.
 '''
 
 [[dependencies.mfd_log_silencer]]
