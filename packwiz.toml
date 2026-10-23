@@ -1,13 +1,13 @@
 name = "MFD Log Silencer"
-filename = "mfd-log-silencer-1.4.0-1.21.1-neoforge.jar"
+filename = "mfd-log-silencer-1.4.1-1.21.1-neoforge.jar"
 side = "both"
 
 [download]
 hash-format = "sha512"
-hash = "7764e2870013e39283c8fc10fa6cdefdc41473f9ff4de5865bd8ba7029d1ed95fe598e8745e15deaef60a73782e20700a35cbcb77a48c8053596b6b86afa23f2"
+hash = "caa547db5b75bed73c1cfb7d48ae2b17faa79246a68514b61a91dc19b71499fc5f8d750dd116f0d92f882e1a433ab440243692b43adb0b18a5324234c63c9a52"
 mode = "metadata:modrinth"
 
 [update]
 [update.modrinth]
 mod-id = "hwFic1er"
-version-id = "IXYjC3Tu"
+version-id = "FzTbrhkM"
