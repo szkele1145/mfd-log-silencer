@@ -5,7 +5,7 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.78'
 }
 
-version = '1.4.0'
+version = '1.4.1'
 group = 'dev.szkele.mfdlogsilencer'
 
 base {
@@ -42,9 +42,13 @@ neoForge {
     version = '21.1.248'
     accessTransformers = []
 
+    // The game directory can be overridden for isolated verification runs:
+    //   gradlew runServer -PgameDir=C:/some/empty/dir
+    def gameDirPath = project.findProperty('gameDir') ?: 'run'
+
     runs {
         configureEach {
-            gameDirectory = file('run')
+            gameDirectory = file(gameDirPath)
         }
         server {
             server()
@@ -62,3 +66,27 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release = 21
 }
+
+// Guard rail: NeoForge only constructs the mod class when it carries the @Mod
+// annotation. Losing it makes the mod appear in the mod list while doing nothing
+// at all - exactly the bug that broke v1.1.1 .. v1.4.0. Fail the build instead.
+tasks.register('verifyModEntryPoint') {
+    description = 'Fails if the mod entry point is missing its @Mod annotation.'
+    group = 'verification'
+    def src = file('src/main/java/dev/szkele/mfdlogsilencer/MfdLogSilencer.java')
+    inputs.file(src)
+    outputs.upToDateWhen { false }
+    doLast {
+        def text = src.getText('UTF-8')
+        def hasAnnotation = text.contains('@Mod(')
+        def hasImport = text.contains('import net.neoforged.fml.common.Mod;')
+        if (!hasImport || !hasAnnotation) {
+            throw new GradleException(
+                    "MfdLogSilencer is missing the @Mod annotation (import=${hasImport}, annotation=${hasAnnotation}). " +
+                    "Without it NeoForge never constructs the mod and the log filter is never installed.")
+        }
+        logger.lifecycle('verifyModEntryPoint: @Mod annotation present - OK')
+    }
+}
+tasks.named('check') { dependsOn 'verifyModEntryPoint' }
+tasks.named('build') { dependsOn 'verifyModEntryPoint' }

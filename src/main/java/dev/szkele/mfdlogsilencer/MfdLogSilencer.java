@@ -1,5 +1,6 @@
 package dev.szkele.mfdlogsilencer;
 
+import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -17,10 +18,17 @@ import java.nio.file.Path;
  * NeoForge 1.21.1) and re-applied once the server has started, because several mods
  * touch the log4j configuration during their own construction. /mfdlogsilencer reload
  * re-reads the config file at any time.
+ *
+ * IMPORTANT: the {@code @Mod} annotation below is what makes NeoForge construct this
+ * class. v1.1.1 accidentally dropped it while moving client-only event handling into a
+ * separate class - the mod then showed up in the mod list (that comes from
+ * neoforge.mods.toml) but its constructor never ran, so no filter was ever installed
+ * and the log spam stayed. Never remove this annotation.
  */
+@Mod(MfdLogSilencer.MODID)
 public final class MfdLogSilencer {
     public static final String MODID = Constants.MODID;
-    public static final String VERSION = "1.4.0";
+    public static final String VERSION = "1.4.1";
 
     /** Our own logger: never silenced, so status output stays visible. */
     public static final Logger LOGGER = LogManager.getLogger(MODID);
@@ -80,11 +88,21 @@ public final class MfdLogSilencer {
     /**
      * Re-attach the filter once the server is fully up: by then every mod has finished
      * its constructor, so any log4j reconfiguration that happened in between is covered.
+     *
+     * This is also the last safety net: if the filter is still not attached after
+     * re-applying, something replaced the log4j configuration behind our back, and we
+     * shout about it instead of silently doing nothing.
      */
     private static void onServerStarted(ServerStartedEvent event) {
         SilencerConfig cfg = config;
-        if (cfg != null) {
-            FilterInstaller.apply(cfg);
+        if (cfg == null) {
+            return;
+        }
+        boolean applied = FilterInstaller.apply(cfg);
+        if (applied && !FilterInstaller.isAttached()) {
+            LOGGER.error("[MFD-LogSilencer] the filter was installed but the log4j configuration "
+                    + "was replaced afterwards - the spam will continue. Use /mfdlogsilencer reload "
+                    + "to re-attach it.");
         }
     }
 }

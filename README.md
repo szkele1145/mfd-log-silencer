@@ -12,18 +12,40 @@
 [Server thread/INFO] [fixed_tweaked_controller/]: [MFD-FixedController] signals pos=BlockPos{x=...} linked=false values={}
 ```
 
-## 为什么 v1.3 及以前“完全没生效”
+## 为什么 v1.4.0 及以前“完全没生效”
 
-目标 mod 的日志走 **SLF4J**，logger 名是从 Java 类 / modid 派生的；它的调试
-mixin 还在 `com.pb7ap8lthh.fmdmod.*`、`dev.ryanhcode.*` 这些包里。1.x 只会挂
-**精确 logger 名**的过滤器，名字对不上就等于什么都没装。1.4.0 改成
-**规则制**（logger 名或 Java 包名）+ **全局 turbo filter**，并保证“规则里的 logger
-名”和“实际出现的 logger 名”无法对不上——即使对不上，`/mfdlogsilencer dump`
-也能一眼看出来该写什么。
+**v1.1.1 ~ v1.4.0 的根因：mod 主类丢了 `@Mod` 注解。** NeoForge 靠这个注解发现并
+实例化 mod 主类；没有它，mod 构造器**一次都不会执行**，过滤器也就一次都没装上。
+
+迷惑之处在于：mod 列表里**照样显示** `MFD Log Silencer 1.4.0`（那是读
+`neoforge.mods.toml` 得到的，与注解无关），但日志里**没有**
+`[MFD-LogSilencer] activated`、`config/mfd-log-silencer.properties` 不会生成、
+`/mfdlogsilencer` 命令也不存在。
+
+- 引入点：v1.1.1 的“专用服务器安全性修复”（把客户端事件类隔离到 `ClientSetup`）
+  误删了 `@Mod(MfdLogSilencer.MODID)` 这行入口注解。
+- v1.4.0 修的是“规则匹配”（logger 名 / Java 包名），这是次要问题——没有
+  `@Mod` 注解，那个修复根本轮不到执行。
+
+v1.4.1 起：
+
+- 补回 `@Mod` 注解；
+- 加**构建护栏** `verifyModEntryPoint`：源码里没有 `@Mod` 注解时直接让构建失败，
+  杜绝“mod 在列表里但什么都不做”再次发生；
+- 规则匹配也保留并加强：目标 mod 的日志走 **SLF4J**，logger 名由 Java 类 / modid
+  派生（`fixed_tweaked_controller`，调试 mixin 在 `com.pb7ap8lthh.fmdmod.*`、
+  `dev.ryanhcode.*`），所以规则支持 **logger 名或 Java 包名**。
 
 > 历史注记：v1.0.0 的 `LevelRangeFilter(TRACE, INFO)` 在 log4j2 intLevel 语义
-> （数值越小越严重）下是空区间；v1.1.0 修了它，但上面那个 logger 名的问题一直
-> 到 1.4.0 才解决。
+> （数值越小越严重）下是空区间；v1.1.0 修了它，但上面那个 `@Mod` 的问题一直
+> 到 1.4.1 才解决。
+
+**如果你的服务器上还是刷屏**，按顺序检查：
+
+1. 启动日志里有没有 `[MFD-LogSilencer] v… activated`？没有 → mod 没被加载
+   （jar 放错目录 / 装的是旧版本）。
+2. 有 `activated` 但仍在刷 → 看 `activated` 那行列出的规则名，用
+   `/mfdlogsilencer dump` 看实际出现的 logger 名，照着加进 `DISABLE=`。
 
 ## 原理
 
@@ -82,12 +104,12 @@ KEEP=warn
 启动日志里应出现（证明已生效）：
 
 ```
-[MFD-LogSilencer] v1.4.0 activated (startup): 3 rule(s) [fixed_tweaked_controller, com.pb7ap8lthh, dev.ryanhcode.sable.Sable], keep=WARN and above
+[MFD-LogSilencer] v1.4.1 activated (startup): 3 rule(s) [fixed_tweaked_controller, com.pb7ap8lthh, dev.ryanhcode.sable.Sable], keep=WARN and above
 ```
 
 ## 安装
 
-把 `mfd-log-silencer-1.4.0-1.21.1-neoforge.jar` 放进 `mods/`。客户端、服务端都能用
+把 `mfd-log-silencer-1.4.1-1.21.1-neoforge.jar` 放进 `mods/`。客户端、服务端都能用
 （纯日志屏蔽，装哪边都行）。
 
 > **前置 mod：[fixed Tweaked Controller](https://modrinth.com/mod/fixed-tweaked-controller)**

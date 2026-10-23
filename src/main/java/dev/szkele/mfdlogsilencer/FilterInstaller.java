@@ -8,6 +8,10 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.core.filter.CompositeFilter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Installs ONE context-wide turbo filter that applies the whole rule set.
@@ -64,14 +68,77 @@ public final class FilterInstaller {
         }
     }
 
-    /** Small helper so the (package private) filter list lookup stays in one place. */
+    /**
+     * Whether our filter is currently attached to the live log4j configuration.
+     * Used as a self-check after re-applying.
+     */
+    public static synchronized boolean isAttached() {
+        try {
+            LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+            return CurrentConfig.hasFilter(ctx.getConfiguration(), TURBO);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /** Small helper so the (package private) filter lookup stays in one place. */
     private static final class CurrentConfig {
+        /**
+         * log4j2's AbstractFilterable keeps ONE filter slot. addFilter() wraps an
+         * already-present filter into a CompositeFilter, so getFilter() returns that
+         * wrapper - not our instance. We therefore look inside the composite as well.
+         */
         static boolean hasFilter(Configuration cfg, Filter f) {
-            try {
-                return cfg.getFilter() == f;
-            } catch (Throwable t) {
+            if (cfg == null || f == null) {
                 return false;
             }
+            try {
+                if (contains(cfg.getFilter(), f)) {
+                    return true;
+                }
+            } catch (Throwable t) {
+                // fall through
+            }
+            for (Filter candidate : allFilters(cfg)) {
+                if (contains(candidate, f)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /** Recursively look for our filter inside a (possibly composite) filter. */
+        private static boolean contains(Filter holder, Filter wanted) {
+            if (holder == null) {
+                return false;
+            }
+            if (holder == wanted) {
+                return true;
+            }
+            if (holder instanceof CompositeFilter composite) {
+                for (Filter child : composite.getFilters()) {
+                    if (contains(child, wanted)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static List<Filter> allFilters(Configuration cfg) {
+            List<Filter> out = new ArrayList<>();
+            try {
+                java.lang.reflect.Field f = org.apache.logging.log4j.core.filter.AbstractFilterable.class
+                        .getDeclaredField("filter");
+                f.setAccessible(true);
+                Object v = f.get(cfg);
+                if (v instanceof Filter filter) {
+                    out.add(filter);
+                }
+            } catch (Throwable t) {
+                out.clear();
+            }
+            return out;
         }
     }
 

@@ -3,6 +3,37 @@
 All notable changes to this project are documented in this file.
 格式参考 Keep a Changelog；版本号语义为 SemVer。
 
+## [1.4.1] - 2026-10-23
+
+### Fixed
+- **真正的根因：mod 主类从 v1.1.1 起就丢了 `@Mod` 注解**，因此 NeoForge
+  **从未实例化过这个类**，过滤器一次都没装上。表现：mod 列表里能看到
+  `MFD Log Silencer 1.4.0`（那是读 `neoforge.mods.toml` 得到的），但日志里
+  **没有** `[MFD-LogSilencer] activated`、`config/mfd-log-silencer.properties`
+  不会生成、`/mfdlogsilencer` 命令不存在——即"完全没生效"。
+  - 引入点：v1.1.1 的"专用服务器安全性修复"（把客户端事件类隔离到
+    `ClientSetup`）误删了 `@Mod(MfdLogSilencer.MODID)` 这行入口注解。
+  - 影响版本：v1.1.1 ~ v1.4.0（全部 8 个版本）。
+  - v1.4.0 修的是"规则匹配"（logger 名/包名），属于次要问题；没有
+    `@Mod` 注解，那个修复根本轮不到执行。
+- 过滤器自检误报：`log4j2` 的 `addFilter()` 会把已有过滤器包成
+  `CompositeFilter`，`getFilter()` 返回的是包装器而非我们的实例，导致
+  "配置被替换"的告警一直误报。改为递归查找 composite 内部。
+
+### Added
+- 构建护栏 `verifyModEntryPoint`：源码里没有 `@Mod` 注解时**直接让构建失败**，
+  杜绝"mod 在列表里但什么都不做"再次发生。
+- 启动后自检：若过滤器重装后仍未挂在当前 log4j 配置上，会打一条明确的
+  ERROR，提示用 `/mfdlogsilencer reload` 重新挂载（而不是静默刷屏）。
+- `-PgameDir=<path>` 构建参数：可在隔离目录里跑服务器，便于验证。
+
+### Verified
+- 真实 NeoForge 1.21.1 专用服务器实测（隔离 gameDir + 一个用目标 logger 名
+  持续打 INFO 的临时 mod）：
+  - 激活前 6 条 `signals pos` 泄漏；**激活后 0 条**
+  - 同期其它 logger 的 INFO 正常输出 269 条（证明只是目标 logger 被屏蔽）
+  - WARN/ERROR 正常放行
+
 ## [1.4.0] - 2026-10-22
 
 ### Fixed
